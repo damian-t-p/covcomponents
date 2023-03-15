@@ -6,7 +6,23 @@
 #' the bottom-up order of nesting so that `factor[i]` is nested inside `factor[i+1]`.
 #'
 #' @return An object of class `nesteddata` containing the information necessary to compute covariance
-#' component estimates. This is usually smaller than `df`.
+#' component estimates.
+#' The underlying object is a list with entries
+#'   * `$sos_matrix` The matrix X'X, where X is the matrix of responses.
+#'   * `$group_sums` Matrix of sums of responses grouped by the second-lowest factor.
+#'
+#' The object also contains the following attributes:
+#'   * `attr(, "n_factors")` Integer recording the number of factors in the model. This will be 2 and
+#' 3 for 1- and 2-way designs respectively.
+#'   * `attr(, "factors")` Character vector of the names of the factors. The order determines the
+#' nesting structure, with the factor `attr(, "factors")[i]` nested inside `attr(, "factors")[i+1]`.
+#'   * `attr(, "parents")` List of character vectors indexed by the names of all factors except the
+#' lowest and highest. The string `attr(, "parents")$factor["level"]` is the name of the level that
+#' "level" is nested inside.
+#'   * `attr(, "n_levels")` Integer vector recording the maximum number of different levels nested
+#' in each parent for each factor.
+#'   * `attr(, "n_observed")` List of integer vectors for every factor except the lowest. Records
+#' the number of levels observed one level below each factor level.
 #'
 #' @export
 nesteddata <- function(df, factors) {
