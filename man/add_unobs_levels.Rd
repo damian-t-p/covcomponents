@@ -6,6 +6,14 @@
 \usage{
 add_unobs_levels(data)
 }
+\arguments{
+\item{data}{An object of class \code{nesteddata}, which can have unbalanced groups factors.}
+}
+\value{
+An object of class \code{nesteddata}, which has exactly the same information as the input \code{data},
+except with dummy levels with zero observations included where necessary to make the output
+group-balanced.
+}
 \description{
 Add empty unobserved factors to unbalanced data
 }

@@ -1,6 +1,19 @@
+#' Use expected level means to balance an unbalanced design
+#'
+#' @param data An object of class `nesteddata`. This must only be unbalanced at the individual level,
+#' with dummy levels present to represent unobserved levels.
+#' @param level_means A list of matrices. The names of the list elements must be the same as those of
+#' the group factors in data. Each list element should be a matrix whose row names are the levels of
+#' the corresponding factor and whose rows are the relevant mean values.
+#' @param global_mean A numeric vector. The global mean of the model.
+#'
+#' @return An object of class `nesteddata`, which is a balanced version of the input `data`.
+#' 
 #' @export
 balance <- function(data, level_means, global_mean = rep(0, dim(data))) {
 
+  stopifnot(is_balanced(data, groups_only = TRUE))
+  
   ancestors <- rownames(data$group_sums)
   ind_means <- 0 * data$group_sums + rep(global_mean, each = nrow(data$group_sums))
   
@@ -29,6 +42,12 @@ balance <- function(data, level_means, global_mean = rep(0, dim(data))) {
 }
 
 #' Add empty unobserved factors to unbalanced data
+#'
+#' @param data An object of class `nesteddata`, which can have unbalanced groups factors.
+#'
+#' @return An object of class `nesteddata`, which has exactly the same information as the input `data`,
+#' except with dummy levels with zero observations included where necessary to make the output
+#' group-balanced.
 #'
 #' @export
 add_unobs_levels <- function(data) {
@@ -86,7 +105,7 @@ add_unobs_levels <- function(data) {
 }
 
 
-#' Create new names
+#' Create a vector of new names that don't conflict with existing names
 #'
 #' @param n_missing Named integer vector detailing how many new names are to be created per parent.
 #' @param existing_names Character vector of names that already exist, and so must be avoided.
