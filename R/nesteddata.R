@@ -110,3 +110,16 @@ new_nesteddata <- function(sos_matrix,
 dim.nesteddata <- function(x) {
   ncol(x$group_sums)
 }
+
+#' @export
+is_balanced <- function(data, groups_only = FALSE) {
+
+  factors_to_check <- attr(data, "factors")[-c(groups_only, attr(data, "n_factors"))]
+
+  all(
+    mapply(\(v, x) all(v == x),
+           attr(data, "n_observed")[factors_to_check],
+           attr(data, "n_levels")[factors_to_check])
+  )
+  
+}

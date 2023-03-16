@@ -44,7 +44,7 @@ add_unobs_levels <- function(data) {
     
     new_names <- extend_names(
       attr(data, "n_levels")[factor] - unbalanced_n_obs[[factor]],
-      names(attr(data, "parents")[factor])
+      names(attr(data, "parents")[[factor]])
     )
 
     balanced_parents[[factor]] <- c(attr(data, "parents")[[factor]], new_names)
@@ -98,7 +98,9 @@ extend_names <- function(n_missing, existing_names = character(0)) {
   k <- length(existing_names)
   full_names <- c(existing_names, new_names)
 
-  names(new_names) <- make.names(full_names, unique = TRUE)[(k+1):length(full_names)]
+  if (length(new_names) >= 1L) {
+    names(new_names) <- make.names(full_names, unique = TRUE)[(k+1):length(full_names)]
+  }
 
   new_names
 }
