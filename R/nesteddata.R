@@ -83,7 +83,7 @@ new_nesteddata <- function(sos_matrix,
                            n_levels,
                            n_observed) {
 
-  stopifnot(is.integer(n_factors))  
+  stopifnot(is.integer(n_factors))
   stopifnot(is.character(factors))
   stopifnot(is.list(parents) && all(sapply(parents, is.character)))
   stopifnot(is.integer(n_levels))
@@ -100,4 +100,13 @@ new_nesteddata <- function(sos_matrix,
     n_observed = n_observed
   )
  
+}
+
+### BASIC METHODS
+
+#' Dimension of the response variable of a nested data object
+#' 
+#' @export
+dim.nesteddata <- function(x) {
+  ncol(x$group_sums)
 }
