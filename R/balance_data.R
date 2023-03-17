@@ -8,28 +8,35 @@
 #' @param global_mean A numeric vector. The global mean of the model.
 #'
 #' @return An object of class `nesteddata`, which is a balanced version of the input `data`.
-#' 
+#'
 #' @export
 balance <- function(data, level_means, global_mean = rep(0, dim(data))) {
 
   stopifnot(is_balanced(data, groups_only = TRUE))
-  
+
+  # Build conditional means for each dam
+  # Since the unobserved individual component is always conditionally uncorrelated with the observed
+  # data, the individual-level conditional means are always zero
   ancestors <- rownames(data$group_sums)
   ind_means <- 0 * data$group_sums + rep(global_mean, each = nrow(data$group_sums))
-  
+ 
   for (factor in attr(data, "factors")[-1]) {
     ind_means <- ind_means + level_means[[factor]][ancestors, ]
     ancestors <- attr(data, "parents")[[factor]][ancestors]
   }
 
+  # Compute conditional unobserved grouped sums by multiplying conditional means by number of unobserved
+  # individuals
   lowest_factor <- attr(data, "factors")[1]
   n_missing <- attr(data, "n_levels")[lowest_factor] - attr(data, "n_observed")[[lowest_factor]]
 
   unobs_sums <- ind_means * n_missing
 
+  # Now n_observed should indicate complete observations
+  # Since data must already be group balanced, only individual-level balancing needs to be recorded
   balanced_n_obs <- attr(data, "n_observed")
   balanced_n_obs[[lowest_factor]][] <- attr(data, "n_levels")[lowest_factor]
-  
+ 
   new_nesteddata(
     sos_matrix = data$sos_matrix + t(ind_means) %*% unobs_sums,
     group_sums = data$group_sums + unobs_sums,
@@ -54,20 +61,20 @@ add_unobs_levels <- function(data) {
 
   balanced_parents <- list()
   unbalanced_n_obs <- attr(data, "n_observed")
-  
+ 
   # Iterate over all factors with children from highest to lowest
   for (factor_idx in (attr(data, "n_factors") - 1):2L) {
 
     factor       <- attr(data, "factors")[[factor_idx]]
     child_factor <- attr(data, "factors")[[factor_idx - 1]]
-    
+   
     new_names <- extend_names(
       attr(data, "n_levels")[factor] - unbalanced_n_obs[[factor]],
       names(attr(data, "parents")[[factor]])
     )
 
     balanced_parents[[factor]] <- c(attr(data, "parents")[[factor]], new_names)
-    
+   
     unbalanced_n_obs[[child_factor]] <- c(
       unbalanced_n_obs[[child_factor]],
       setNames(rep(0L, length(new_names)), names(new_names))
@@ -118,7 +125,7 @@ extend_names <- function(n_missing, existing_names = character(0)) {
   full_names <- c(existing_names, new_names)
 
   if (length(new_names) >= 1L) {
-    names(new_names) <- make.names(full_names, unique = TRUE)[(k+1):length(full_names)]
+    names(new_names) <- make.names(full_names, unique = TRUE)[(k + 1):length(full_names)]
   }
 
   new_names

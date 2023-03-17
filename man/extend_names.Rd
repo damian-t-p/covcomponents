@@ -2,7 +2,7 @@
 % Please edit documentation in R/balance_data.R
 \name{extend_names}
 \alias{extend_names}
-\title{Create new names}
+\title{Create a vector of new names that don't conflict with existing names}
 \usage{
 extend_names(n_missing, existing_names = character(0))
 }
@@ -12,5 +12,5 @@ extend_names(n_missing, existing_names = character(0))
 \item{existing_names}{Character vector of names that already exist, and so must be avoided.}
 }
 \description{
-Create new names
+Create a vector of new names that don't conflict with existing names
 }

@@ -31,11 +31,11 @@ nesteddata <- function(df, factors) {
   stopifnot(n_factors >= 2L)
   
   value_matrix <- df %>%
-    dplyr::select(-all_of(factors)) %>%
+    dplyr::select(-dplyr::all_of(factors)) %>%
     as.matrix()
 
   label_matrix <- df %>%
-    dplyr::transmute(across(all_of(factors), make.names)) %>%
+    dplyr::transmute(dplyr::across(dplyr::all_of(factors), make.names)) %>%
     as.matrix()
 
   parents    <- list()
@@ -57,7 +57,7 @@ nesteddata <- function(df, factors) {
     }
   }
   
-  n_levels = c(
+  n_levels <- c(
     sapply(n_observed, max),
     length(unique(label_matrix[, n_factors]))
   )
@@ -69,7 +69,7 @@ nesteddata <- function(df, factors) {
     n_factors  = n_factors,
     factors    = factors,
     parents    = parents,
-    n_levels   = n_levels, 
+    n_levels   = n_levels,
     n_observed = n_observed
   )
   
@@ -105,7 +105,7 @@ new_nesteddata <- function(sos_matrix,
 ### BASIC METHODS
 
 #' Dimension of the response variable of a nested data object
-#' 
+#'
 #' @export
 dim.nesteddata <- function(x) {
   ncol(x$group_sums)

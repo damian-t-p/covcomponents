@@ -54,7 +54,7 @@ test_that("Balancing is idempotent", {
 
 test_that("Re-ordering means doesn't change balancing", {
   shuffled_means <- lapply(means,
-                           \(M) M[sample(1:nrow(M)), ])
+                           \(m) m[sample(seq_len(nrow(m))), ])
 
   expect_equal(balance(data_full, shuffled_means), data_balanced)
 })

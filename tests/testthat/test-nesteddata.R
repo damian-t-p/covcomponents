@@ -16,5 +16,5 @@ test_that("Factor structure inferred correctly", {
   expect_mapequal(attr(data, "n_observed")$dam,
                   c(s1 = 2L, s2 = 2L, s3 = 3L))
   expect_mapequal(attr(data, "parents")$dam,
-                  c(d1 = "s1", d2 = "s1", d3 = "s2", d4 = "s2", d5 = "s3" , d6 = "s3", d7 = "s3"))
+                  c(d1 = "s1", d2 = "s1", d3 = "s2", d4 = "s2", d5 = "s3", d6 = "s3", d7 = "s3"))
 })
