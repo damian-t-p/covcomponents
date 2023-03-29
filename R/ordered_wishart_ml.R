@@ -8,7 +8,7 @@
 #'
 #' @param A1,A2 Square matrices with a `degf` attribute.
 #'
-#' @return
+#' @return A list with entries `primal` and `dual`
 #'
 #' @export
 ordered_wishart_ml <- function(A1, A2) {
@@ -56,6 +56,19 @@ ordered_wishart_ml <- function(A1, A2) {
 }
 
 
+#' ML estimates for Wishart covariance under general order
+#'
+#' Given a named list of realisations of independent Wishart matrices, compute the maximum likelihood
+#' estimates of their underlying covariances under a given set of binary order constraints.
+#'
+#' This is done using an algorithm due to Calvin and Dykstra (1991)
+#'
+#' @param A_list A names list of square matrices with a `degf` attribute.
+#' @param constraints A 2-row character matrix specifying the order constraints. Each column `v` encodes
+#' a single order constraint through `v[1] <= v[2]`.
+#' @param max.iter The number of EM iterations before termination.
+#'
+#' @export
 multiordered_wishart_ml <- function(A_list,
                                     constraints,
                                     max.iter = 100) {

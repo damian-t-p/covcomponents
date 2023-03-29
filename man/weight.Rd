@@ -2,7 +2,7 @@
 % Please edit documentation in R/sumofsquares.R
 \name{weight}
 \alias{weight}
-\title{Inverse number of individuals per level at a given factor}
+\title{Number of individuals per level at a given factor}
 \usage{
 weight(ns, factor_idx)
 }
@@ -12,5 +12,5 @@ weight(ns, factor_idx)
 \item{factor_idx}{Index of factor for which to compute weight}
 }
 \description{
-Computes 1/(I\link{1} ... I\link{k-1})
+Computes (I\link{1} ... I\link{k-1})
 }

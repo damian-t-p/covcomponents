@@ -14,9 +14,10 @@ sos  <- sumofsquares(data)
 
 ordered_wishart_ml(sos$ind, sos$dam)
 
-constraints <- matrix(c("ind", "dam", "dam", "sire"), nrow = 2)
-
-cd_mats <- multiordered_wishart_ml(sos, constraints)
+cd_mats <- multiordered_wishart_ml(
+  A_list      = sos,
+  constraints = linear_order(c("ind", "dam", "sire"))
+)
 
 suppressWarnings({
 
