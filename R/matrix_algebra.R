@@ -16,11 +16,15 @@ eigensqrt <- function(A, compute_inverse = FALSE) {
   d <- decomp$values
 
   stopifnot(all(d > -1e-6))
+
+  nonzero <- as.numeric(d > 1e-6)
+  diag_v <- sqrt(abs(d)) + (1 - nonzero)
   
   if (compute_inverse) {
     list(
-      sqrt    = t(V) * sqrt(abs(d)),
-      invsqrt = t(t(V) * 1 / sqrt(abs(d)))
+      sqrt        = t(V) * sqrt(abs(diag_v)),
+      invsqrt     = t(t(V) * 1 / sqrt(abs(diag_v))),
+      nonzero_idx = nonzero
     )
   } else {
     t(V) * sqrt(abs(d))

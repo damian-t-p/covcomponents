@@ -20,10 +20,11 @@ ordered_wishart_ml <- function(A1, A2) {
   S1 <- A1 / n1
   S2 <- A2 / n2
 
-  # S1 = U' U
+  ## S1 = U' U
   S1_decomp <- eigensqrt(S1, compute_inverse = TRUE)
   U     <- S1_decomp$sqrt
   U_inv <- S1_decomp$invsqrt
+  c     <- S1_decomp$nonzero_idx
 
   # inv(U') S2 inv(U) = Q D Q'
   eigs <- eigen(t(U_inv) %*% S2 %*% U_inv, symmetric = TRUE)
@@ -34,8 +35,8 @@ ordered_wishart_ml <- function(A1, A2) {
   # B S2 B' = D
   B_inv <- t(U) %*% Q
 
-  c_hat = 1 - n2/(n1 + n2) * pmax(1 - d, 0)
-  d_hat = d + n1/(n1 + n2) * pmax(1 - d, 0)
+  c_hat = c - n2/(n1 + n2) * pmax(c - d, 0)
+  d_hat = d + n1/(n1 + n2) * pmax(c - d, 0)
 
   # primal solutions
   Sig1_hat <- B_inv %*% diag(c_hat, nrow = length(c_hat)) %*% t(B_inv)

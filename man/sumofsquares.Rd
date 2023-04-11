@@ -4,14 +4,15 @@
 \alias{sumofsquares}
 \title{Compute sum-of-squares matrices from nested data}
 \usage{
-sumofsquares(data, fixed_intercept = FALSE)
+sumofsquares(data, method = c("ML", "REML"), intercept = TRUE)
 }
 \arguments{
 \item{data}{An object of class \code{nesteddata}}
 
-\item{fixed_intercept}{Logical indicating whether the global mean in the model is a fixed effect.
-This should be \code{TRUE} for maximum likelihood estimation. If \code{TRUE}, \code{A[n]} will have an additional
-degree of freedom.}
+\item{method}{Character indicating the method in which these sum-of-squares matrices will appear.
+If \code{TRUE}, \code{A[n]} will have an additional degree of freedom.}
+
+\item{intercept}{Logical indicating whether model includes an intercept term.}
 }
 \value{
 A list of matrices indexed by factor name. Each matrix has a \code{degf} attribute, which encodes
