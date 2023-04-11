@@ -93,10 +93,10 @@ new_nesteddata <- function(sos_matrix,
     list(sos_matrix = sos_matrix,
          group_sums = group_sums),
     class      = "nesteddata",
-    n_factors   = n_factors,
-    factors     = factors,
+    n_factors  = n_factors,
+    factors    = factors,
     parents    = parents,
-    n_levels  = n_levels,
+    n_levels   = n_levels,
     n_observed = n_observed
   )
  

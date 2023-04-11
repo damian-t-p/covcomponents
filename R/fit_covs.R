@@ -6,10 +6,17 @@ fit_covs <- function(data, ...) {
 }
 
 fit_covs.nesteddata <- function(data,
-                                fixed_intercept = FALSE,
+                                method    = c("ML", "REML"), 
+                                intercept = TRUE,
                                 ...) {
 
-  sos         <- sumofsquares(data, fixed_intercept)
+  method <- match.arg(method)
+
+  if (method == "REML" & !intercept) {
+    stop("The REML criterion assumes an intercept")
+  }
+  
+  sos         <- sumofsquares(data, method    = method, intercept = intercept)
   constraints <- linear_order(attr(data, "factors"))
 
   full_covs <- multiordered_wishart_ml(sos, constraints, ...)
@@ -18,7 +25,9 @@ fit_covs.nesteddata <- function(data,
   
   prev_factor <- NULL
   divisor     <- 1
-  
+
+  # Split full covariance estimates into covariance components
+  # Due to the constraints, each element of cov_comps will be non-negative definite
   for (factor in attr(data, "factors")) {
 
     if (is.null(prev_factor)) {

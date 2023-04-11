@@ -21,12 +21,9 @@ ordered_wishart_ml <- function(A1, A2) {
   S2 <- A2 / n2
 
   # S1 = U' U
-  decomp <- eigen(S1, symmetric = TRUE)
-  V <- decomp$vectors
-  d <- decomp$values
-
-  U     <- t(V) * sqrt(abs(d))
-  U_inv <- t(t(V) * 1  /sqrt(abs(d)))
+  S1_decomp <- eigensqrt(S1, compute_inverse = TRUE)
+  U     <- S1_decomp$sqrt
+  U_inv <- S1_decomp$invsqrt
 
   # inv(U') S2 inv(U) = Q D Q'
   eigs <- eigen(t(U_inv) %*% S2 %*% U_inv, symmetric = TRUE)

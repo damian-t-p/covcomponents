@@ -67,4 +67,65 @@ get_covs <- function(fit){
   return(out)
 }
 
-lme_mats <- get_covs(lme1)
+reml_mats <- fit_covs(data, method = "REML")
+lme_mats  <- get_covs(lme1)
+
+
+reml_crit <- function(M1, S1, I1, M2, S2, I2, M3, S3, I3) {
+  p <- nrow(M1)
+
+  n1 <- I3*I2*(I1 - 1)
+  n2 <- I3*(I2 - 1)
+  n3 <- I3 - 1
+  n <- n1 + n2 + n3
+
+  G1 <- M1/n1
+  G2 <- M2/n2
+  G3 <- M3/n3
+
+  sig1 <- S1
+  sig2 <- S1 + I1 * S2
+  sig3 <- S1 + I1 * S2 + I1*I2 * S3
+
+  c <- -p*n/2 * log(2*pi) +
+    -p/2 * log(I1*I2*I3) +
+    #-1/2 * log(det(2*pi*sig3)) +
+    -1/2 * (
+      n1 * log(det(G1)) +
+        n2 * log(det(G2)) +
+        n3 * log(det(G3))
+    )
+
+  1/2 * (
+    n1 * (log(det(solve(sig1) %*% G1)) - sum(diag(solve(sig1) %*% G1))) +
+      n2 * (log(det(solve(sig2) %*% G2)) - sum(diag(solve(sig2) %*% G2))) +
+      n3 * (log(det(solve(sig3) %*% G3)) - sum(diag(solve(sig3) %*% G3)))
+  ) + c
+
+}
+
+reml_score <- reml_crit(
+  sos$ind / 6,  reml_mats$ind,  2,
+  sos$dam / 3,  reml_mats$dam,  2,
+  sos$sire / 2, reml_mats$sire, 3
+)
+
+lme_score <- reml_crit(
+  sos$ind / 6,  lme_mats$ind,  2,
+  sos$dam / 3,  lme_mats$dam,  2,
+  sos$sire / 2, lme_mats$sire, 3
+)
+
+test_that("Calvin-Dykstra produces non-negative definite estimates", {
+
+  expect_true(all(eigen(reml_mats$ind)$values > -1e-6))
+  expect_true(all(eigen(reml_mats$dam)$values > -1e-6))
+  expect_true(all(eigen(reml_mats$sire)$values > -1e-6))
+  
+})
+
+test_that("Calvin-Dykstra has a REML score no smaller than lme", {
+
+  expect_true(reml_score >= lme_score)
+  
+})

@@ -7,9 +7,9 @@
 #'          cov  = Sigma[1] + I[1] Sigma[2] + ... + I[1] ... I[n-1] Sigma[n]))
 #'
 #' @param data An object of class `nesteddata`
-#' @param fixed_intercept Logical indicating whether the global mean in the model is a fixed effect.
-#' This should be `TRUE` for maximum likelihood estimation. If `TRUE`, `A[n]` will have an additional
-#' degree of freedom.
+#' @param method Character indicating the method in which these sum-of-squares matrices will appear.
+#' If `TRUE`, `A[n]` will have an additional degree of freedom.
+#' @param intercept Logical indicating whether model includes an intercept term.
 #'
 #' @return A list of matrices indexed by factor name. Each matrix has a `degf` attribute, which encodes
 #' the degrees of freedom in the corresponding likelihood function. This is usually the degrees of
@@ -17,8 +17,11 @@
 #'
 #' @export
 sumofsquares <- function(data,
-                         fixed_intercept = FALSE) {
+                         method    = c("ML", "REML"),
+                         intercept = TRUE) {
 
+  method <- match.arg(method)
+  
   stopifnot(is_balanced(data))
   
   noncentral_sos <- list()
@@ -50,8 +53,13 @@ sumofsquares <- function(data,
   }
 
   # `factor` is now the highest level
+
+  if (intercept) {
+    grand_mean <- colMeans(means)
+  } else {
+    grand_mean <- rep(0, ncol(means))
+  }
   
-  grand_mean <- colMeans(means)
   grand_sos  <- grand_mean %o% grand_mean
   
   children_per_level <- attr(data, "n_levels")[[factor]]
@@ -59,7 +67,7 @@ sumofsquares <- function(data,
   central_mom[[factor]] <- structure(
     weight(attr(data, "n_levels"), factor_idx) *
       (noncentral_sos[[factor]] - grand_sos * children_per_level),
-    degf = degf(attr(data, "n_levels"), factor_idx, fixed_intercept = fixed_intercept)
+    degf = degf(attr(data, "n_levels"), factor_idx, fixed_intercept = (method == "ML"))
   )
 
   structure(
