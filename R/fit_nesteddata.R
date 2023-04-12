@@ -1,3 +1,13 @@
+#' Computes REML or ML estimates of nested covariance components
+#'
+#' @param sos List of sum-of-squares matrices
+#' @param constraints Matrix of order constraints for the factors
+#' @param data An object inheriting `nesteddata`
+#' @param ... Other arguments to pass to `multiordered_wishart_ml`
+#'
+#' @return A list of estimated covariance components
+#'
+#' @export
 fit_balanced_nesteddata <- function(sos, constraints, data, ...) {
   
   full_covs <- multiordered_wishart_ml(sos, constraints, ...)
@@ -27,6 +37,11 @@ fit_balanced_nesteddata <- function(sos, constraints, data, ...) {
   cov_comps
 }
 
+#' Produces a list of identity matrices to use as initial guesses for covariance components
+#'
+#' @param data An object inheriting `nesteddata`
+#'
+#' @return A named list of identity matrices with an entry corresponding to each factor in `data`
 init_covs_nesteddata <- function(data) {
 
   identity <- diag(x = 1, nrow = dim(data))

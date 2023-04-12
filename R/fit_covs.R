@@ -28,8 +28,8 @@ fit_covs.nesteddata <- function(data,
     unbalanced_EM(
       crit_argmax            = fit_balanced_nesteddata,
       crit_argmax_params     = list(constraints = constraints, data = data),
-      arg_conditioner        = conditional_sos,
-      arg_conditioner_parals = list(data = data),
+      sos_conditioner        = conditional_sos_nesteddata,
+      sos_conditioner_params = list(data = data),
       init_params            = init_covs_nesteddata(data),
       ...
     )

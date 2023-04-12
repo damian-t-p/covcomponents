@@ -6,19 +6,16 @@
 \usage{
 unbalanced_EM(
   crit_argmax,
-  arg_conditioner,
+  sos_conditioner,
   init_params,
   max.iter = 100L,
   check_convergence = function(curr_params, prev_params) FALSE,
   crit_argmax_params = list(),
-  arg_conditioner_params = list()
+  sos_conditioner_params = list()
 )
 }
 \arguments{
 \item{crit_argmax}{An function that maximises a criterion of interest given a list of arguments}
-
-\item{arg_conditioner}{A function that computes the conditional expectation of arguments required
-for the \code{crit_argmax} function. Should take as its first argument the updating parameter values.}
 
 \item{init_params}{A list of initial parameter guesses}
 
@@ -29,7 +26,11 @@ retugns a logical indicating whether the EM algorithm has converged.}
 
 \item{crit_argmax_params}{List of non-updating arguments to pass to \code{crit_argmax}}
 
-\item{arg_conditioner_params}{List of non-updating arguments to pass to \code{arg_conditioner}}
+\item{sos_conditioner_params}{List of non-updating arguments to pass to \code{sos_conditioner}}
+
+\item{arg_conditioner}{A function that computes the conditional expectation of sum-of-squares
+matrices required for the \code{crit_argmax} function. Should take as its first argument the updating
+#' parameter values.}
 }
 \value{
 A list of parameters in the format of \code{init_params}
