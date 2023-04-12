@@ -15,34 +15,26 @@ fit_covs.nesteddata <- function(data,
   if (method == "REML" & !intercept) {
     stop("The REML criterion assumes an intercept")
   }
-  
-  sos         <- sumofsquares(data, method    = method, intercept = intercept)
+
   constraints <- linear_order(attr(data, "factors"))
 
-  full_covs <- multiordered_wishart_ml(sos, constraints, ...)
-
-  cov_comps   <- list()
-  
-  prev_factor <- NULL
-  divisor     <- 1
-
-  # Split full covariance estimates into covariance components
-  # Due to the constraints, each element of cov_comps will be non-negative definite
-  for (factor in attr(data, "factors")) {
-
-    if (is.null(prev_factor)) {
-      cov_comps[[factor]] <- full_covs[[factor]]
-    } else {
-      cov_comps[[factor]] <- (full_covs[[factor]] - full_covs[[prev_factor]]) / divisor
-    }
+  if (is_balanced(data)) {
     
-    cov_comps 
+    sos <- sumofsquares(data, method = method, intercept = intercept)
+    fit_balanced_nesteddata(sos, constraints, data, ...)
+    
+  } else {
 
-    divisor <- divisor * attr(data, "n_levels")[[factor]]
-    prev_factor <- factor
+    unbalanced_EM(
+      crit_argmax            = fit_balanced_nesteddata,
+      crit_argmax_params     = list(constraints = constraints, data = data),
+      arg_conditioner        = conditional_sos,
+      arg_conditioner_parals = list(data = data),
+      init_params            = init_covs_nesteddata(data),
+      ...
+    )
     
   }
-
-  cov_comps
+  
   
 }
