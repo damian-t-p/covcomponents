@@ -69,7 +69,8 @@ ordered_wishart_ml <- function(A1, A2) {
 #' @export
 multiordered_wishart_ml <- function(A_list,
                                     constraints,
-                                    max.iter = 100) {
+                                    max.iter          = 100,
+                                    check_convergence = converged_l_infinity(1e-6)) {
 
   p        <- nrow(A_list[[1]])
   zero_mat <- matrix(0, nrow = p, ncol = p)
@@ -124,7 +125,4 @@ multiordered_wishart_ml <- function(A_list,
   
 }
 
-check_convergence <- function(mats1, mats2) {
-  (min(length(mats1), length(mats2)) >= 1) &&
-    all(mapply(\(m1, m2) all(abs(m1 - m2) < 1e-6), mats1, mats2))
-}
+

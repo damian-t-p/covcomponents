@@ -123,3 +123,30 @@ is_balanced <- function(data, groups_only = FALSE) {
   )
   
 }
+
+add_global_factor <- function(data,
+                              group_name       = "group",
+                              group_level_name = group_name) {
+
+  top_factor    <- attr(data, "factors")[attr(data, "n_factors")]
+  second_factor <- attr(data, "factors")[attr(data, "n_factors") - 1L]
+  top_names     <- names(attr(data, "n_observed")[[second_factor]])
+  n_top         <- length(top_names)
+  
+  new_nesteddata(
+    sos_matrix = data$sos_matrix,
+    group_sums = data$group_sums,
+    n_factors  = attr(data, "n_factors") + 1L,
+    factors    = c(attr(data, "factors"), group_name),
+    parents    = c(
+      attr(data, "parents"),
+      rlang::list2({{top_factor}} := setNames(rep(group_level_name, n_top), top_names))
+    ),
+    n_levels   = c(attr(data, "n_levels"), setNames(1L, group_name)),
+    n_observed = c(
+      attr(data, "n_observed"),
+      rlang::list2({{top_factor}} := setNames(n_top, group_level_name))
+    )
+  )
+  
+}

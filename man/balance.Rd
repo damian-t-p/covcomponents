@@ -4,7 +4,7 @@
 \alias{balance}
 \title{Use expected level means to balance an unbalanced design}
 \usage{
-balance(data, level_means, global_mean = rep(0, dim(data)))
+balance(data, level_means, global_mean = zero_vector(data))
 }
 \arguments{
 \item{data}{An object of class \code{nesteddata}. This must only be unbalanced at the individual level,

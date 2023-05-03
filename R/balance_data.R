@@ -10,7 +10,7 @@
 #' @return An object of class `nesteddata`, which is a balanced version of the input `data`.
 #'
 #' @export
-balance <- function(data, level_means, global_mean = rep(0, dim(data))) {
+balance <- function(data, level_means, global_mean = zero_vector(data)) {
 
   stopifnot(is_balanced(data, groups_only = TRUE))
 

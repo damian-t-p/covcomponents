@@ -34,22 +34,19 @@ eigensqrt <- function(A, compute_inverse = FALSE) {
 
 #' Compute (A^(-1) + n E^(-1))^(-1) for a vector of ns
 #'
-#' @param A Symmetric nonnegative-definite square matrix
-#' @param E Symmetric positive-definite square matrix
+#' @param A Symmetric nonnegative-definite covariance matrix
+#' @param E Symmetric positive-definite covariance or precision matrix
 #' @param ns A vector of numerics
-#' @param E_type If this equals `"prec"`, the `E` argument is instead `E^(-1)`
 #'
 #' @return A list of inverted matrices indexed by the vector `ns`
-paired_inverse <- function(A, E, E_type = c("cov", "prec")) {
-
-  E_type <- match.arg(E_type)
+paired_inverse <- function(A, E, ns, keep_names = TRUE) {
 
   U <- eigensqrt(A)
 
-  if(E_type == "cov") {
-    W <- U %*% solve(E, t(U))
-  } else {
+  if (is_precision(E)) {
     W <- U %*% E %*% t(U)
+  } else {
+    W <- U %*% solve(E, t(U))
   }
 
   W_eigen <- eigen(W, symmetric = TRUE)
@@ -58,9 +55,29 @@ paired_inverse <- function(A, E, E_type = c("cov", "prec")) {
 
   inv_mats <- list()
   for(n in ns) {
-    inv_mats[[as_label(n)]] <- UtP %*% diag(1/(W_eigen$values * n + 1)) %*% t(UtP)
+    inv_mat <- UtP %*% diag(1/(W_eigen$values * n + 1)) %*% t(UtP)
+
+    if (keep_names) {
+      dimnames(inv_mat) <- dimnames(A)
+    }
+    
+    inv_mats[[as_label(n)]] <- inv_mat
+
   }
 
   inv_mats
   
+}
+
+
+covm <- function(mat) {
+  structure(mat, type = "covariance")
+}
+
+precm <- function(mat) {
+  structure(mat, type = "precision")
+}
+
+is_precision <- function(mat) {
+  !is.null(attr(mat, "type")) && (attr(mat, "type") == "precision")
 }

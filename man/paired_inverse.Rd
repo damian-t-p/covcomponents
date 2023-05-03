@@ -4,14 +4,12 @@
 \alias{paired_inverse}
 \title{Compute (A^(-1) + n E^(-1))^(-1) for a vector of ns}
 \usage{
-paired_inverse(A, E, E_type = c("cov", "prec"))
+paired_inverse(A, E, ns, keep_names = TRUE)
 }
 \arguments{
-\item{A}{Symmetric nonnegative-definite square matrix}
+\item{A}{Symmetric nonnegative-definite covariance matrix}
 
-\item{E}{Symmetric positive-definite square matrix}
-
-\item{E_type}{If this equals \code{"prec"}, the \code{E} argument is instead \code{E^(-1)}}
+\item{E}{Symmetric positive-definite covariance or precision matrix}
 
 \item{ns}{A vector of numerics}
 }

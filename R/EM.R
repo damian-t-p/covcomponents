@@ -1,7 +1,7 @@
 #' Uses the EM algorithm to maximise a given criterion in unbalanced data
 #'
 #' @param crit_argmax An function that maximises a criterion of interest given a list of arguments
-#' @param arg_conditioner A function that computes the conditional expectation of sum-of-squares
+#' @param sos_conditioner A function that computes the conditional expectation of sum-of-squares
 #' matrices required for the `crit_argmax` function. Should take as its first argument the updating
 #' #' parameter values.
 #' @param init_params A list of initial parameter guesses
@@ -14,11 +14,11 @@
 #' @return A list of parameters in the format of `init_params`
 #' 
 #' @export
-unbalanced_EM <- function(crit_argmax,
+unbalanced_em <- function(crit_argmax,
                           sos_conditioner,
                           init_params,
                           max.iter               = 100L,
-                          check_convergence      = \(curr_params, prev_params) FALSE,
+                          check_convergence      = converged_l_infinity(1e-6),
                           crit_argmax_params     = list(),
                           sos_conditioner_params = list()) {
 

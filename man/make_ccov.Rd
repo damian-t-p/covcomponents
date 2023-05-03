@@ -4,7 +4,7 @@
 \alias{make_ccov}
 \title{Compute the conditional covariances between effects in a nested model given observed data}
 \usage{
-make_ccov(data, group_effect = FALSE)
+make_ccov(data, group_effect = FALSE, ...)
 }
 \arguments{
 \item{data}{An object of class \code{nesteddata}}
