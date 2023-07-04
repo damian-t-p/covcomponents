@@ -7,7 +7,7 @@
 multiordered_wishart_ml(
   A_list,
   constraints,
-  max.iter = 100,
+  max.iter = 1000L,
   check_convergence = converged_l_infinity(1e-06)
 )
 }

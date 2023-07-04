@@ -24,7 +24,7 @@ unbalanced_em <- function(crit_argmax,
 
   prev_params <- init_params
 
-  for (i in 1:max.iter) {
+  for (i in seq_len(max.iter)) {
 
     cond_sos <- rlang::inject(
       sos_conditioner(prev_params, !!!sos_conditioner_params)

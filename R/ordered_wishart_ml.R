@@ -69,7 +69,7 @@ ordered_wishart_ml <- function(A1, A2) {
 #' @export
 multiordered_wishart_ml <- function(A_list,
                                     constraints,
-                                    max.iter          = 100,
+                                    max.iter          = 1000L,
                                     check_convergence = converged_l_infinity(1e-6)) {
 
   p        <- nrow(A_list[[1]])

@@ -6,7 +6,7 @@ fit_covs <- function(data, ...) {
 }
 
 fit_covs.nesteddata <- function(data,
-                                method    = c("ML", "REML"), 
+                                method    = c("ML", "REML"),
                                 intercept = TRUE,
                                 ...) {
 

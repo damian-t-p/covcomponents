@@ -54,7 +54,7 @@ paired_inverse <- function(A, E, ns, keep_names = TRUE) {
   UtP <- t(U) %*% W_eigen$vectors
 
   inv_mats <- list()
-  for(n in ns) {
+  for (n in ns) {
     inv_mat <- UtP %*% diag(1/(W_eigen$values * n + 1)) %*% t(UtP)
 
     if (keep_names) {

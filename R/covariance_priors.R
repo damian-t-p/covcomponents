@@ -28,6 +28,6 @@ identity_priors <- function(data) {
 
 flat_prior <- function(data) {
 
-  precm(zero_matri(data))
+  precm(zero_matrix(data))
   
 }
