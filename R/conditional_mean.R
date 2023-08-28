@@ -14,7 +14,7 @@ make_cmean_oneway_mainfixed <- function(data,
                                         prior_global_mean = zero_vector(data)) {
 
   error_cov  <- attr(ccov, "prior_covs")[[attr(data, "factors")[1]]]
-  error_prec <- precm(solve(error_cov))
+  error_prec <- solve(error_cov)
   
   centered_sums <- data$group_sums - attr(data, "n_observed")[[attr(data, "factors")[1]]] %o% prior_global_mean
   skewed_sums   <- centered_sums %*% error_prec

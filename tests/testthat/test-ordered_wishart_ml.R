@@ -1,18 +1,39 @@
 set.seed(1234)
 
-df <- data.frame(
-  sire = paste0("s", c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3)),
-  dam  = paste0("d", c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6)),
-  ind  = paste0("i", 1:12),
-  t1   = rnorm(12),
-  t2   = rnorm(12),
-  t3   = rnorm(12)
+
+#one-way
+p <- 3
+df <- rnesteddata(
+  covs = list(
+    ind  = rnorm(p * p) %>% matrix(nrow = p) %>% {. %*% t(.)},
+    dam  = rnorm(p * p) %>% matrix(nrow = p) %>% {. %*% t(.)}),
+  nlevels_per_factor = c(ind = 2, dam = 3),
+  var_names = c("t1", "t2", "t3")
+)
+
+data <- nesteddata(df, factors = c("ind", "dam"))
+sos <- sumofsquares(data, method = "REML")
+
+fit_covs.nesteddata(data, method = "REML")
+
+ordered_wishart_ml(sos$ind, sos$dam)
+halfsibdesign:::stepreml_1way(sos$ind, 3, sos$dam, 2)
+
+set.seed(1234)
+# two-way
+p <- 3
+df <- rnesteddata(
+  covs = list(
+    ind  = rnorm(p * p) %>% matrix(nrow = p) %>% {. %*% t(.)},
+    dam  = rnorm(p * p) %>% matrix(nrow = p) %>% {. %*% t(.)},
+    sire = rnorm(p * p) %>% matrix(nrow = p) %>% {. %*% t(.)}),
+  nlevels_per_factor = c(ind = 2, dam = 2, sire = 3),
+  var_names = c("t1", "t2", "t3")
 )
 
 data <- nesteddata(df, factors = c("ind", "dam", "sire"))
-sos  <- sumofsquares(data)
 
-ordered_wishart_ml(sos$ind, sos$dam)
+sos <- sumofsquares(data, method = "REML")
 
 cd_mats <- multiordered_wishart_ml(
   A_list      = sos,
@@ -42,7 +63,7 @@ suppressWarnings({
 
 get_covs <- function(fit){
   
-  resid_sds <- fit$sigma * sqrt((1 + c(0, fit$modelStruct$varStruct)))
+  resid_sds <- fit$sigma * sqrt(coef(fit$modelStruct$varStruct, FALSE, TRUE))
   resid_corr <- as.matrix(fit$modelStruct$corStruct)[[1]]
   S1 <- outer(resid_sds, resid_sds) * resid_corr
   
@@ -67,9 +88,8 @@ get_covs <- function(fit){
   return(out)
 }
 
-reml_mats <- fit_covs(data, method = "REML")
+reml_mats <- fit_covs.nesteddata(data, method = "REML")
 lme_mats  <- get_covs(lme1)
-
 
 reml_crit <- function(M1, S1, I1, M2, S2, I2, M3, S3, I3) {
   p <- nrow(M1)
@@ -87,33 +107,35 @@ reml_crit <- function(M1, S1, I1, M2, S2, I2, M3, S3, I3) {
   sig2 <- S1 + I1 * S2
   sig3 <- S1 + I1 * S2 + I1*I2 * S3
 
-  c <- -p*n/2 * log(2*pi) +
-    -p/2 * log(I1*I2*I3) +
-    #-1/2 * log(det(2*pi*sig3)) +
-    -1/2 * (
-      n1 * log(det(G1)) +
-        n2 * log(det(G2)) +
-        n3 * log(det(G3))
-    )
 
   1/2 * (
     n1 * (log(abs(det(solve(sig1) %*% G1))) - sum(diag(solve(sig1) %*% G1))) +
       n2 * (log(abs(det(solve(sig2) %*% G2))) - sum(diag(solve(sig2) %*% G2))) +
       n3 * (log(abs(det(solve(sig3) %*% G3))) - sum(diag(solve(sig3) %*% G3)))
-  ) + c
+  ) 
 
 }
 
 reml_score <- reml_crit(
-  sos$ind / 6,  reml_mats$ind,  2,
-  sos$dam / 3,  reml_mats$dam,  2,
-  sos$sire / 2, reml_mats$sire, 3
+  sos$ind / attr(sos$ind, "degf"),  reml_mats$ind,  2,
+  sos$dam / attr(sos$dam, "degf"),  reml_mats$dam,  2,
+  sos$sire / attr(sos$sire, "degf"), reml_mats$sire, 3
 )
 
 lme_score <- reml_crit(
-  sos$ind / 6,  lme_mats$ind,  2,
-  sos$dam / 3,  lme_mats$dam,  2,
-  sos$sire / 2, lme_mats$sire, 3
+  sos$ind / attr(sos$ind, "degf"),  lme_mats$ind,  2,
+  sos$dam / attr(sos$dam, "degf"),  lme_mats$dam,  2,
+  sos$sire / attr(sos$sire, "degf"), lme_mats$sire, 3
+)
+
+hsd_mats <- halfsibdesign::EM_fit(
+  halfsibdesign::halfsibdata(df, df_format = "wide"),
+  method = "REML")
+
+hsd_score <- reml_crit(
+  sos$ind / attr(sos$ind, "degf"),  hsd_mats$ind,  2,
+  sos$dam / attr(sos$dam, "degf"),  hsd_mats$dam,  2,
+  sos$sire / attr(sos$sire, "degf"), hsd_mats$sire, 3
 )
 
 test_that("Calvin-Dykstra produces non-negative definite estimates", {
@@ -126,6 +148,7 @@ test_that("Calvin-Dykstra produces non-negative definite estimates", {
 
 test_that("Calvin-Dykstra has a REML score no smaller than lme", {
 
-  expect_true(reml_score >= lme_score - 1e-2 * abs(lme_score))
+  expect_true(reml_score >= lme_score - 1e-6)
+  print(reml_score - lme_score)
   
 })

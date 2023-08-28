@@ -5,16 +5,16 @@ cond_sos_oneway_mainfixed <- function(est_params, unbalanced_data) {
                       ccov,
                       prior_global_mean = est_params$global_mean)
 
-  balanced_data <- balance(data, cmean, cmean$global)
+  balanced_data <- balance(unbalanced_data, cmean, cmean$global)
 
   sos <- sumofsquares(balanced_data,
                       method    = "ML",
                       intercept = TRUE)
 
-  factors   <- attr(data, "factors")
-  n_obs     <- attr(data, "n_observed")[[ factors[1] ]]
-  n_max     <- attr(data, "n_levels")[[ factors[1] ]]
-  top_max   <- attr(data, "n_levels")[[ factors[2] ]]
+  factors   <- attr(balanced_data, "factors")
+  n_obs     <- attr(balanced_data, "n_observed")[[ factors[1] ]]
+  n_max     <- attr(balanced_data, "n_levels")[[ factors[1] ]]
+  top_max   <- attr(balanced_data, "n_levels")[[ factors[2] ]]
   n_missing <- n_max - n_obs
   
   top_levels <- names(n_obs)

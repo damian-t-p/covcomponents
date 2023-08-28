@@ -11,7 +11,7 @@
 #' @return A list with entries `primal` and `dual`
 #'
 #' @export
-ordered_wishart_ml <- function(A1, A2) {
+ordered_wishart_ml <- function(A1, A2, keep_names = TRUE) {
 
   n1 <- attr(A1, "degf")
   n2 <- attr(A2, "degf")
@@ -42,6 +42,11 @@ ordered_wishart_ml <- function(A1, A2) {
   Sig1_hat <- B_inv %*% diag(c_hat, nrow = length(c_hat)) %*% t(B_inv)
   Sig2_hat <- B_inv %*% diag(d_hat, nrow = length(d_hat)) %*% t(B_inv)
 
+  if (keep_names) {
+    dimnames(Sig1_hat) <- dimnames(A1)
+    dimnames(Sig2_hat) <- dimnames(A2)
+  }
+  
   # dual solutions
   Psi1_hat <- (n1 / 2) * Sig1_hat - A1 / 2
   Psi2_hat <- (n2 / 2) * Sig2_hat - A2 / 2

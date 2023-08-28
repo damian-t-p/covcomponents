@@ -28,6 +28,8 @@ identity_priors <- function(data) {
 
 flat_prior <- function(data) {
 
-  precm(zero_matrix(data))
+  # Matrix with Inf on the diagonal and 0 elsewhere
+  # this satisfies solve(M) == 0 and solve(M, x) == 0 for any x
+  ifelse(identity_matrix(data) == 0, 0, Inf)
   
 }

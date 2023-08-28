@@ -96,8 +96,8 @@ rnesteddata <- function(covs,
 
   colnames(full_vals) <- var_names
 
-  name_table <- as_tibble(lapply(level_vals, rownames))
-  full_table <- cbind(name_table, as_tibble(full_vals))
+  name_table <- tibble::as_tibble(lapply(level_vals, rownames))
+  full_table <- cbind(name_table, tibble::as_tibble(full_vals))
   
   if (format == "table") {
     full_table

@@ -22,8 +22,8 @@ eigensqrt <- function(A, compute_inverse = FALSE) {
   
   if (compute_inverse) {
     list(
-      sqrt        = t(V) * sqrt(abs(diag_v)),
-      invsqrt     = t(t(V) * 1 / sqrt(abs(diag_v))),
+      sqrt        = t(V) * diag_v,
+      invsqrt     = t(t(V) * 1 / diag_v),
       nonzero_idx = nonzero
     )
   } else {
@@ -39,11 +39,13 @@ eigensqrt <- function(A, compute_inverse = FALSE) {
 #' @param ns A vector of numerics
 #'
 #' @return A list of inverted matrices indexed by the vector `ns`
-paired_inverse <- function(A, E, ns, keep_names = TRUE) {
+paired_inverse <- function(A, E, ns, E_type = c("covariance", "precision"), keep_names = TRUE) {
 
+  E_type <- match.arg(E_type)
+  
   U <- eigensqrt(A)
 
-  if (is_precision(E)) {
+  if (E_type == "precision") {
     W <- U %*% E %*% t(U)
   } else {
     W <- U %*% solve(E, t(U))
@@ -67,17 +69,4 @@ paired_inverse <- function(A, E, ns, keep_names = TRUE) {
 
   inv_mats
   
-}
-
-
-covm <- function(mat) {
-  structure(mat, type = "covariance")
-}
-
-precm <- function(mat) {
-  structure(mat, type = "precision")
-}
-
-is_precision <- function(mat) {
-  !is.null(attr(mat, "type")) && (attr(mat, "type") == "precision")
 }

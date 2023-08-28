@@ -15,7 +15,7 @@ n_sires <- 2
 rtable <- rnesteddata(covmats, c(ind = 5, sire = 2))
 
 test_that("Output table has the right dimensions", {
-  expect_equal(dim(rdata), c(n_ind * n_sires, p + 2))
+  expect_equal(dim(rtable), c(n_ind * n_sires, p + 2))
 })
 
 test_that("Correct number of distinct levels", {

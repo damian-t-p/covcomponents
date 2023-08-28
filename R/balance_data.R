@@ -13,7 +13,7 @@
 balance <- function(data, level_means, global_mean = zero_vector(data)) {
 
   stopifnot(is_balanced(data, groups_only = TRUE))
-
+  
   # Build conditional means for each dam
   # Since the unobserved individual component is always conditionally uncorrelated with the observed
   # data, the individual-level conditional means are always zero
